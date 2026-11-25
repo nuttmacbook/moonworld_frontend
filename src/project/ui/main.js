@@ -20,15 +20,28 @@ import { home, homeLoading, homeError } from "./pages/home";
 
 /* ------------------------------------ 1. pages (the first one opens by default; others at #/name) */
 
-// The engine joins `loading` and `footer` as text; toString() redraws them so a language change shows at once
+// The engine joins `loading` and `footer` as plain text. Objects with toString() do not survive the production build
+// (the minifier turned `{ toString: footer }` into `{}` → "[object Object]"), so pass strings and draw the footer in its own box.
 const pages = {
-    home: { load: getHomeData, view: home, loading: { toString: homeLoading }, error: homeError },
+    home: { load: getHomeData, view: home, loading: homeLoading(), error: homeError },
 };
 
 mountAmbient();
 const isClosed = isMaintenance();
 if (isClosed) showMaintenance();
-const app = isClosed ? null : startApp({ pages, header, footer: { toString: footer }, notify });
+/** The footer lives right after #app (not inside it), so a language change can redraw it on its own */
+const drawFooter = () => {
+    let box = document.getElementById("site-footer");
+    if (!box) {
+        box = document.createElement("div");
+        box.id = "site-footer";
+        document.getElementById("app")?.after(box);
+    }
+    box.innerHTML = footer();
+};
+
+drawFooter();
+const app = isClosed ? null : startApp({ pages, header, footer: "", notify });
 if (app) mountEffects();
 
 /* ------------------------------------ 2. buttons (called from onclick="..." in the pages) */
@@ -45,6 +58,7 @@ window.goTo = (id) => {
 
 window.setLanguage = (code) => {
     setLang(code);
+    drawFooter();
     document.querySelectorAll("details.lang-menu").forEach((el) => el.removeAttribute("open"));
     if (app) app.refresh({ quiet: true });
     else showMaintenance();

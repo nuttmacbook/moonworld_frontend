@@ -44,7 +44,7 @@ body {
     background: var(--color-space);
 }
 
-#app { position: relative; z-index: 1; }
+#app, #site-footer { position: relative; z-index: 1; }
 svg text { font-family: var(--font-display); }
 
 /* Loading shimmer for numbers that are still on their way */
