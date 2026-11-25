@@ -1,0 +1,6 @@
+{
+    "// what this is": "SETTINGS. Test tokens the local chain (npm run dev, npm test) deploys. The website reads the first one in place of the real MWLD token (VITE_TOKEN_ADDRESS) while running on the local chain. Anyone can mint it from the test panel.",
+    "tokens": [
+        { "symbol": "MWLD", "name": "Moon World (test)", "decimals": 18, "replaces": [] }
+    ]
+}
